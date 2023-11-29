@@ -23,6 +23,7 @@
 ///     assert_eq!("mocked", get_string(&mut Context::default()));
 /// }
 /// ```
+#[allow(invalid_reference_casting)]
 pub unsafe fn as_mut<T>(t_ref: &T) -> &mut T {
     &mut *(t_ref as *const T as *mut T)
 }

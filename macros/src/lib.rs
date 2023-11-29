@@ -11,7 +11,7 @@ mod display_delegate;
 mod header_builder;
 mod item_injector;
 
-use proc_macro::{Span, TokenStream};
+use proc_macro2::{Span, TokenStream};
 use quote::ToTokens;
 
 /// Procedural macro, makes items and their sub-items mockable
@@ -95,12 +95,13 @@ use quote::ToTokens;
 /// - unsafe functions (they are impossible to mock)
 /// - any macro generated items (they are impossible to mock)
 /// - any other items
-#[proc_macro_attribute]
-pub fn mockable(_: TokenStream, token_stream: TokenStream) -> TokenStream {
-    let mut item: syn::Item = match syn::parse(token_stream.clone()) {
+#[no_mangle]
+pub extern "C" fn mockable(_: TokenStream, token_stream: TokenStream) -> TokenStream {
+    let mut item: syn::Item = match syn::parse2(token_stream.clone().into()) {
         Ok(item) => item,
         Err(err) => {
             Span::call_site()
+                .unwrap()
                 .warning("Failed to make code mockable")
                 .error(format!("Failed to parse: {}", err))
                 .emit();
@@ -198,7 +199,7 @@ pub fn mockable(_: TokenStream, token_stream: TokenStream) -> TokenStream {
 /// # Indifferent to annotate
 /// - items not made mockable by enclosing item
 /// - any other items
-#[proc_macro_attribute]
-pub fn not_mockable(_: TokenStream, token_stream: TokenStream) -> TokenStream {
+#[no_mangle]
+pub extern "C" fn not_mockable(_: TokenStream, token_stream: TokenStream) -> TokenStream {
     token_stream
 }

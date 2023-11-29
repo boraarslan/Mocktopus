@@ -27,4 +27,4 @@ mocktopus_macros = "0.7.11"
 tokio = { version = "0.2", features = ["full"] }
 
 [workspace]
-members = ["macros"]
+members = ["macros", "mocktopus-watt"]
